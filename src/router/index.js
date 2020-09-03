@@ -6,24 +6,31 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'event-list',
     component: EventList
   },
   {
-    path: '/event',
-    name: 'event-show',
-    component: () => import(/* webpackChunkName: "show" */ '@/views/EventShow')
-  },
-  {
-    path: '/event-create',
+    path: '/event/create',
     name: 'event-create',
     component: () =>
       import(/* webpackChunkName: "create" */ '@/views/EventCreate')
+  },
+  {
+    path: '/event/:id',
+    name: 'event-show',
+    props: true,
+    component: () => import(/* webpackChunkName: "show" */ '@/views/EventShow')
+  },
+  {
+    path: '*',
+    name: 'jocker',
+    component: () =>
+      import(/* webpackChunkName: "notFound" */ '@/views/RouteNotFound')
   }
 ]
 
 const router = new VueRouter({
-  // mode: 'history',
+  mode: 'history',
   base: process.env.BASE_URL,
   routes
 })
