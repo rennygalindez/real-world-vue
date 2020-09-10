@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import '@/components/globalComponents'
+import 'nprogress/nprogress.css'
 
 Vue.config.productionTip = false
 
