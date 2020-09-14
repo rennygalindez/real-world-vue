@@ -31,18 +31,12 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
 export default {
-  computed: { ...mapState('events', ['event']) },
   props: {
-    id: {
-      type: [String, Number],
-      require: true
+    event: {
+      type: [Object]
+      // require: true
     }
-  },
-  methods: { ...mapActions('events', ['fetchEvent']) },
-  created() {
-    this.fetchEvent(this.id)
   }
 }
 </script>
