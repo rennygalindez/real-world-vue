@@ -86,6 +86,12 @@ strong {
 small {
   font-size: 80%;
 }
+.error {
+  border: solid red 1px;
+}
+.errorMessage {
+  color: red;
+}
 .eyebrow {
   font-size: 20px;
 }
