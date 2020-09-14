@@ -1,13 +1,9 @@
 <template>
   <div>
+    <h3>{{ example | reply('Renny') | excla | capi }}</h3>
     <h1>Event list</h1>
-    <template v-if="loading">
-      <img :src="require('../../public/Pulse-1s-200px.gif')" />
-    </template>
-    <template v-else>
-      <EventCard v-for="(event, index) of events" :key="index" :event="event" />
-      <paginator :page="page" />
-    </template>
+    <EventCard v-for="event of events" :key="event.id" :event="event" />
+    <paginator :page="page" />
   </div>
 </template>
 
@@ -15,6 +11,22 @@
 import EventCard from '@/components/EventCard.vue'
 import Paginator from '@/components/Paginator.vue'
 import { mapActions, mapState } from 'vuex'
+import store from '@/store'
+import NProgress from 'nprogress'
+function getEvents(to, next) {
+  const currentPage = to.query.page || 1
+  store
+    .dispatch('events/fetchEvents', {
+      page: currentPage,
+      limit: store.state.events.EventsPerPage
+    })
+    .then(() => next())
+    .catch(err => {
+      NProgress.done()
+      next({ name: 'network-issue', params: { err: err.message } })
+    })
+}
+
 export default {
   components: { EventCard, Paginator },
   data() {
@@ -24,13 +36,28 @@ export default {
     ...mapState('events', { events: 'events' }),
     page() {
       return parseInt(this.$route.query.page) || 1
+    },
+    example() {
+      return 'hello'
     }
   },
   methods: { ...mapActions('events', { fetchEvents: 'fetchEvents' }) },
-  created() {
-    this.fetchEvents({ limit: 3, page: this.page }).then(
-      () => (this.loading = false)
-    )
+  beforeRouteEnter(to, from, next) {
+    getEvents(to, next)
+  },
+  beforeRouteUpdate(to, from, next) {
+    getEvents(to, next)
+  },
+  filters: {
+    capi(x) {
+      return x.toUpperCase()
+    },
+    excla(x) {
+      return `${x}!!!`
+    },
+    reply(x, name) {
+      return `${x}, ${name}`
+    }
   }
 }
 </script>
