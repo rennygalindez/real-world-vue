@@ -5,7 +5,8 @@ export default {
   state: {
     events: [],
     eventsTotal: 0,
-    event: {}
+    event: {},
+    EventsPerPage: 3
   },
   getters: {
     catLength: state => state.categories.length,
@@ -59,8 +60,10 @@ export default {
             'UPDATE_EVENTS_TOTAL',
             parseInt(response.headers['x-total-count'])
           )
+          return 1
         })
-        .catch(err =>
+        .catch(err => {
+          console.log(err)
           dispatch(
             'notifications/addNotification',
             {
@@ -69,25 +72,19 @@ export default {
             },
             { root: true }
           )
-        )
+          throw err
+        })
     },
-    fetchEvent({ commit, getters, dispatch }, id) {
+    fetchEvent({ commit, getters /*, dispatch */ }, id) {
       const event = getters.getEvent(id)
       if (!event) {
-        EventsService.getEvent(id)
-          .then(({ data }) => commit('UPDATE_EVENT', data))
-          .catch(err =>
-            dispatch(
-              'notifications/addNotification',
-              {
-                type: 'error',
-                message: `There was a problem fetch the Event ${err.message}`
-              },
-              { root: true }
-            )
-          )
+        return EventsService.getEvent(id).then(({ data }) => {
+          commit('UPDATE_EVENT', data)
+          return data
+        })
       } else {
         commit('UPDATE_EVENT', event)
+        return event
       }
     }
   }
